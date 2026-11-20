@@ -1,0 +1,9 @@
+{% extends "web/base.html" %}{% block titulo %}Contratistas{% endblock %}
+{% block contenido %}
+<h1>Contratistas y proveedores</h1>
+<div class="dos-col">
+<form method="post" class="tarjeta formulario"><h2>Registrar</h2>{% csrf_token %}{% include "web/_campos.html" %}<button class="btn" type="submit">Guardar</button></form>
+<div class="tarjeta tabla-ancha"><h2>Registrados ({{ lista|length }})</h2><table><thead><tr><th>Razón social</th><th>NIT</th><th>Correo</th></tr></thead><tbody>
+{% for c in lista %}<tr><td>{{ c.razon_social }}</td><td>{{ c.nit|default:"—" }}</td><td>{{ c.correo_contacto|default:"—" }}</td></tr>{% empty %}<tr><td colspan="3" class="mut">Aún no hay contratistas.</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endblock %}

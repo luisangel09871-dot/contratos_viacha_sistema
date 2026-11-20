@@ -1,0 +1,40 @@
+{% extends "web/base.html" %}{% load formato %}{% block titulo %}Contrato {{ contrato.numero }}{% endblock %}
+{% block contenido %}
+<div class="cabecera"><h1>Contrato {{ contrato.numero }} {% include "web/_estado.html" with e=contrato.estado %}</h1>
+  {% if puede_editar %}<a class="btn-sec" href="{% url 'web:contrato_editar' contrato.id %}">Editar</a>{% endif %}</div>
+<div class="tarjeta">
+  <p>{{ contrato.objeto }}</p>
+  <dl class="datos">
+    <div><dt>Tipo</dt><dd>{{ contrato.tipo_nombre }}</dd></div>
+    <div><dt>Contratista</dt><dd>{{ contrato.contratista_nombre }}</dd></div>
+    <div><dt>Responsable</dt><dd>{{ contrato.responsable_nombre }}</dd></div>
+    <div><dt>Monto</dt><dd>{{ contrato.monto|bs }}</dd></div>
+    <div><dt>Inicio</dt><dd>{{ contrato.fecha_inicio|date:"d/m/Y" }}</dd></div>
+    <div><dt>Vencimiento</dt><dd>{{ contrato.fecha_vencimiento|date:"d/m/Y" }} · <strong>{{ dias|dias_texto }}</strong></dd></div>
+  </dl>
+  {% if puede_editar %}<form method="post" action="{% url 'web:contrato_estado' contrato.id %}" class="en-linea">{% csrf_token %}
+    <label for="estado-final">Cambiar estado:</label>
+    <select name="estado" id="estado-final"><option value="renovado">Renovado</option><option value="terminado">Terminado</option><option value="reabrir">Reabrir (volver al cálculo automático)</option></select>
+    <button class="btn-sec" type="submit">Aplicar</button></form>{% endif %}
+</div>
+
+<div class="dos-col">
+<div class="tarjeta"><h2>Garantías</h2>
+  <ul class="lista">{% for g in garantias %}<li>{{ g.tipo|capfirst }} · vence el {{ g.fecha_vencimiento|date:"d/m/Y" }}</li>{% empty %}<li class="mut">Sin garantías registradas.</li>{% endfor %}</ul>
+  {% if puede_editar %}<form method="post" action="{% url 'web:garantia_nueva' contrato.id %}" class="en-linea">{% csrf_token %}{{ gar_form.tipo }} {{ gar_form.fecha_vencimiento }}<button class="btn-sec" type="submit">Agregar</button></form>{% endif %}
+</div>
+<div class="tarjeta"><h2>Documentos</h2>
+  <ul class="lista">{% for d in documentos %}<li><a href="{% url 'web:documento_descargar' d.id %}">{{ d.nombre_original }}</a> <small class="mut">{{ d.tamano|tamano }} · {{ d.fecha|date:"d/m/Y" }} · {{ d.subido_por_nombre }}</small></li>{% empty %}<li class="mut">Sin documentos.</li>{% endfor %}</ul>
+  {% if puede_subir %}<form method="post" enctype="multipart/form-data" action="{% url 'web:documento_subir' contrato.id %}" class="en-linea">{% csrf_token %}
+    <input type="file" name="archivo" accept=".pdf,.docx,.txt" required aria-label="Archivo"><button class="btn-sec" type="submit">Subir</button></form>
+  <small class="mut">PDF, DOCX o TXT, hasta 10 MB. El asistente podrá responder sobre su contenido.</small>{% endif %}
+</div></div>
+
+<div class="dos-col">
+<div class="tarjeta"><h2>Alertas</h2>
+  <ul class="lista">{% for a in alertas %}<li><strong>{{ a.nivel|nivel_texto }}</strong> · {{ a.fecha_emision|date:"d/m/Y H:i" }} · <small class="mut">{{ a.canal }}</small><br><small>{{ a.mensaje }}</small></li>{% empty %}<li class="mut">Sin alertas.</li>{% endfor %}</ul></div>
+<div class="tarjeta"><h2>Seguimiento</h2>
+  <ul class="lista">{% for s in seguimientos %}<li>{{ s.fecha|date:"d/m/Y H:i" }} · <strong>{{ s.usuario_nombre }}</strong><br>{{ s.accion }}</li>{% empty %}<li class="mut">Aún no hay acciones registradas.</li>{% endfor %}</ul>
+  {% if puede_seguimiento %}<form method="post" action="{% url 'web:seguimiento_nuevo' contrato.id %}">{% csrf_token %}{{ seg_form.accion }}<button class="btn" type="submit">Registrar acción</button></form>{% endif %}
+</div></div>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends "web/base.html" %}{% block titulo %}Bitácora{% endblock %}
+{% block contenido %}
+<h1>Bitácora de auditoría</h1><p class="mut">Últimos {{ registros|length }} registros. Cada operación queda con usuario, tabla, operación y fecha.</p>
+<div class="tarjeta tabla-ancha"><table><thead><tr><th>Fecha y hora</th><th>Usuario</th><th>Tabla</th><th>Operación</th><th>Detalle</th></tr></thead><tbody>
+{% for r in registros %}<tr><td>{{ r.fecha_hora|date:"d/m/Y H:i:s" }}</td><td>{{ r.usuario_nombre }}</td><td>{{ r.tabla }}</td><td>{{ r.operacion }}</td><td>{{ r.detalle }}</td></tr>{% empty %}<tr><td colspan="5" class="mut">Sin registros.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

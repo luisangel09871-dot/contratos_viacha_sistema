@@ -1,0 +1,10 @@
+{% extends "web/base.html" %}{% load formato %}{% block titulo %}{{ titulo }}{% endblock %}
+{% block contenido %}
+<div class="cabecera"><h1>{{ titulo }}</h1><a class="btn-sec" href="?tipo={{ tipo }}&formato=csv">Descargar CSV</a></div>
+<p class="en-linea">{% for k, t in titulos.items %}<a class="btn-sec {% if k == tipo %}activo{% endif %}" href="?tipo={{ k }}">{{ t }}</a> {% endfor %}</p>
+<div class="tarjeta tabla-ancha"><table><thead><tr><th>Número</th><th>Objeto</th><th>Contratista</th><th>Responsable</th><th>Vence</th><th>Estado</th><th>Monto</th></tr></thead><tbody>
+{% for c in contratos %}<tr><td><a href="{% url 'web:contrato_ficha' c.id %}">{{ c.numero }}</a></td><td>{{ c.objeto|truncatechars:60 }}</td><td>{{ c.contratista_nombre }}</td><td>{{ c.responsable_nombre }}</td><td>{{ c.fecha_vencimiento|date:"d/m/Y" }}</td><td>{% include "web/_estado.html" with e=c.estado %}</td><td>{{ c.monto|bs }}</td></tr>
+{% empty %}<tr><td colspan="7" class="mut">No hay contratos en este reporte.</td></tr>{% endfor %}
+</tbody></table></div>
+<p class="mut">{{ contratos|length }} contrato{{ contratos|length|pluralize }}.</p>
+{% endblock %}

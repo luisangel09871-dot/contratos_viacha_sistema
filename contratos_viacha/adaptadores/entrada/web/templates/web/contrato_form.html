@@ -1,0 +1,9 @@
+{% extends "web/base.html" %}{% block titulo %}{% if editando %}Editar contrato{% else %}Nuevo contrato{% endif %}{% endblock %}
+{% block contenido %}
+<h1>{% if editando %}Editar contrato{% else %}Registrar contrato{% endif %}</h1>
+<form method="post" class="tarjeta formulario">{% csrf_token %}
+  {% include "web/_campos.html" %}
+  <button class="btn" type="submit">Guardar</button>
+  <a class="btn-sec" href="{% if editando %}{% url 'web:contrato_ficha' editando %}{% else %}{% url 'web:contratos' %}{% endif %}">Cancelar</a>
+</form>
+{% endblock %}

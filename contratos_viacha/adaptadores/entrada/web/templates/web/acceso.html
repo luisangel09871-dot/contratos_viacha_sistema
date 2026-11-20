@@ -1,0 +1,12 @@
+{% extends "web/base.html" %}{% block titulo %}Acceso{% endblock %}
+{% block contenido %}
+<div class="acceso">
+  <div class="hex-grande" aria-hidden="true">⬡</div>
+  <h1>Gestión de contratos</h1>
+  <p class="mut">Gobierno Autónomo Municipal de Viacha</p>
+  <form method="post" class="tarjeta">{% csrf_token %}
+    {% include "web/_campos.html" %}
+    <button class="btn" type="submit">Ingresar</button>
+  </form>
+</div>
+{% endblock %}

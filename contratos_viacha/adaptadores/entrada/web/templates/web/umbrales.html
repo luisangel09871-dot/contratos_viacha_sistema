@@ -1,0 +1,6 @@
+{% extends "web/base.html" %}{% block titulo %}Umbrales de alerta{% endblock %}
+{% block contenido %}
+<h1>Umbrales de alerta</h1>
+<p class="mut">Definen cuándo un contrato pasa a «próximo a vencer» o «crítico» y cuándo se envían los avisos. Los valores iniciales son una propuesta que debe aprobar el GAM Viacha.</p>
+<form method="post" class="tarjeta formulario">{% csrf_token %}{% include "web/_campos.html" %}<button class="btn" type="submit">Guardar umbrales</button></form>
+{% endblock %}

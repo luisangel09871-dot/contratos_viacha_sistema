@@ -1,0 +1,52 @@
+{% load static %}<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="csrf-token" content="{{ csrf_token }}">
+<title>{% block titulo %}Contratos{% endblock %} · GAM Viacha</title>
+<link rel="stylesheet" href="{% static 'web/estilo.css' %}">
+</head>
+<body>
+{% if user.is_authenticated %}
+<header class="barra">
+  <a class="marca" href="{% url 'web:panel' %}"><span class="hex">⬡</span> Contratos GAM Viacha</a>
+  <nav aria-label="Principal">
+    <a href="{% url 'web:panel' %}">Panel</a>
+    <a href="{% url 'web:contratos' %}">Contratos</a>
+    <a href="{% url 'web:alertas' %}">Alertas{% if alertas_pendientes %} <span class="pastilla">{{ alertas_pendientes }}</span>{% endif %}</a>
+    {% if puede_editar %}<a href="{% url 'web:contratistas' %}">Contratistas</a>{% endif %}
+    {% if puede_reportes %}<a href="{% url 'web:reportes' %}">Reportes</a>{% endif %}
+    {% if es_admin %}<a href="{% url 'web:usuarios' %}">Usuarios</a><a href="{% url 'web:umbrales' %}">Umbrales</a><a href="{% url 'web:auditoria' %}">Bitácora</a>{% endif %}
+  </nav>
+  <form method="post" action="{% url 'web:salir' %}" class="sesion">{% csrf_token %}
+    <span title="{{ actor.rol.etiqueta }}">{{ actor.nombre_completo }} · <small>{{ actor.rol.etiqueta }}</small></span>
+    <button class="btn-sec" type="submit">Salir</button>
+  </form>
+</header>
+{% endif %}
+<main class="contenido">
+  {% if messages %}<div class="mensajes" role="status">{% for m in messages %}<div class="msg msg-{{ m.level_tag }}">{{ m }}</div>{% endfor %}</div>{% endif %}
+  {% block contenido %}{% endblock %}
+</main>
+{% if user.is_authenticated %}
+<button id="chat-abrir" class="chat-fab" aria-label="Abrir asistente de contratos">💬 Asistente</button>
+<section id="chat" class="chat" hidden aria-label="Asistente de contratos">
+  <div class="chat-cab"><strong>Asistente de contratos</strong><button id="chat-cerrar" aria-label="Cerrar">✕</button></div>
+  <div id="chat-msgs" class="chat-msgs" aria-live="polite"></div>
+  <div id="chat-adjunto" class="chat-adjunto" hidden>
+    <span id="chat-archivo"></span>
+    <input id="chat-numero" placeholder="Contrato, ej. 045/2026" aria-label="Número de contrato">
+    <button id="chat-subir" type="button">Adjuntar</button><button id="chat-cancelar" type="button" class="btn-sec">✕</button>
+  </div>
+  <div class="chat-entrada">
+    <input type="file" id="chat-file" accept=".pdf,.docx,.txt" hidden>
+    <button id="chat-clip" type="button" aria-label="Adjuntar documento" title="Adjuntar documento (PDF, DOCX o TXT)">📎</button>
+    <input id="chat-texto" maxlength="500" placeholder="Pregunta, ej. ¿Qué vence esta semana?" aria-label="Mensaje">
+    <button id="chat-enviar" type="button">Enviar</button>
+  </div>
+</section>
+<script src="{% static 'web/chat.js' %}" defer data-url-consultar="{% url 'web:chatbot_consultar' %}" data-url-subir="{% url 'web:chatbot_subir' %}"></script>
+{% endif %}
+</body>
+</html>

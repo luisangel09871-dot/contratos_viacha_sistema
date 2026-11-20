@@ -1,0 +1,14 @@
+{% extends "web/base.html" %}{% load formato %}{% block titulo %}Contratos{% endblock %}
+{% block contenido %}
+<div class="cabecera"><h1>Contratos</h1>{% if puede_editar %}<a class="btn" href="{% url 'web:contrato_nuevo' %}">+ Registrar contrato</a>{% endif %}</div>
+<form method="get" class="tarjeta filtros">
+  {% for campo in form %}<div class="campo"><label for="{{ campo.id_for_label }}">{{ campo.label }}</label>{{ campo }}</div>{% endfor %}
+  <div class="campo"><button class="btn" type="submit">Filtrar</button> <a class="btn-sec" href="{% url 'web:contratos' %}">Limpiar</a></div>
+</form>
+<div class="tarjeta tabla-ancha">
+<table><thead><tr><th>Número</th><th>Objeto</th><th>Tipo</th><th>Contratista</th><th>Responsable</th><th>Vence</th><th>Estado</th></tr></thead><tbody>
+{% for c in contratos %}<tr><td><a href="{% url 'web:contrato_ficha' c.id %}">{{ c.numero }}</a></td><td>{{ c.objeto|truncatechars:60 }}</td><td>{{ c.tipo_nombre }}</td><td>{{ c.contratista_nombre }}</td><td>{{ c.responsable_nombre }}</td><td>{{ c.fecha_vencimiento|date:"d/m/Y" }}</td><td>{% include "web/_estado.html" with e=c.estado %}</td></tr>
+{% empty %}<tr><td colspan="7" class="mut">No hay contratos que coincidan con la búsqueda.</td></tr>{% endfor %}
+</tbody></table></div>
+<p class="mut">{{ contratos|length }} contrato{{ contratos|length|pluralize }}.</p>
+{% endblock %}

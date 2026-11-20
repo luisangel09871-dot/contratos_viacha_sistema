@@ -1,0 +1,11 @@
+{% extends "web/base.html" %}{% block titulo %}Usuarios{% endblock %}
+{% block contenido %}
+<h1>Usuarios y roles</h1>
+<div class="dos-col">
+<form method="post" class="tarjeta formulario"><h2>Crear usuario</h2>{% csrf_token %}{% include "web/_campos.html" %}<button class="btn" type="submit">Crear</button></form>
+<div class="tarjeta tabla-ancha"><h2>Usuarios ({{ lista|length }})</h2><table><thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Activo</th></tr></thead><tbody>
+{% for u in lista %}<tr><td>{{ u.nombre_completo }}</td><td>{{ u.correo }}</td>
+<td>{% if u.id != actor.id %}<form method="post" action="{% url 'web:usuario_rol' u.id %}" class="en-linea">{% csrf_token %}<select name="rol" aria-label="Rol de {{ u.nombre_completo }}">{% for r in roles %}<option value="{{ r.value }}" {% if r == u.rol %}selected{% endif %}>{{ r.etiqueta }}</option>{% endfor %}</select><button class="btn-sec" type="submit">Cambiar</button></form>{% else %}{{ u.rol.etiqueta }} (usted){% endif %}</td>
+<td>{% if u.id != actor.id %}<form method="post" action="{% url 'web:usuario_activo' u.id %}">{% csrf_token %}<input type="hidden" name="activo" value="{% if u.activo %}0{% else %}1{% endif %}"><button class="btn-sec" type="submit">{% if u.activo %}Desactivar{% else %}Activar{% endif %}</button></form>{% else %}Sí{% endif %}</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endblock %}

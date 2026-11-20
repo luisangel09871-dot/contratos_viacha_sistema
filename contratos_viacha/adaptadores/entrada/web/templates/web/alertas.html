@@ -1,0 +1,9 @@
+{% extends "web/base.html" %}{% load formato %}{% block titulo %}Alertas{% endblock %}
+{% block contenido %}
+<div class="cabecera"><h1>Alertas</h1><a class="btn-sec" href="{% url 'web:alertas' %}{% if not solo %}?pendientes=1{% endif %}">{% if solo %}Ver todas{% else %}Ver solo sin leer{% endif %}</a></div>
+<div class="tarjeta tabla-ancha"><table><thead><tr><th>Fecha</th><th>Contrato</th><th>Nivel</th><th>Mensaje</th><th>Canal</th><th></th></tr></thead><tbody>
+{% for a in alertas %}<tr class="{% if not a.leida %}sin-leer{% endif %}"><td>{{ a.fecha_emision|date:"d/m/Y H:i" }}</td><td><a href="{% url 'web:contrato_ficha' a.id_contrato %}">{{ a.contrato_numero }}</a></td><td>{{ a.nivel|nivel_texto }}</td><td>{{ a.mensaje }}</td><td>{{ a.canal }}</td>
+<td>{% if not a.leida %}<form method="post" action="{% url 'web:alerta_leida' a.id %}">{% csrf_token %}<button class="btn-sec" type="submit">Marcar leída</button></form>{% else %}<small class="mut">Leída</small>{% endif %}</td></tr>
+{% empty %}<tr><td colspan="6" class="mut">No hay alertas.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

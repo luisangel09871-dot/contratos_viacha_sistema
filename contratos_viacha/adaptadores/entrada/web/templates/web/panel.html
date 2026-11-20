@@ -1,0 +1,35 @@
+{% extends "web/base.html" %}{% load formato %}{% block titulo %}Panel{% endblock %}
+{% block contenido %}
+<h1>Panel de control</h1>
+<p class="mut">Situación al {{ hoy|date:"d/m/Y" }}. Umbrales: próximo a vencer ≤ {{ umbrales.dias_proximo }} días, crítico ≤ {{ umbrales.dias_critico }} días.</p>
+<div class="resumen">
+  <div class="tarjeta"><span class="num">{{ total }}</span><span>Contratos visibles</span></div>
+  <div class="tarjeta"><span class="num">{{ alertas_pendientes }}</span><span><a href="{% url 'web:alertas' %}?pendientes=1">Alertas sin leer</a></span></div>
+  <div class="tarjeta"><span class="num">{{ garantias_por_vencer }}</span><span>Garantías por vencer</span></div>
+</div>
+<div class="tarjeta">
+  <h2>Contratos por estado</h2>
+  {% for b in barras %}
+  <div class="fila-barra"><span class="et"><span class="punto estado-{{ b.clave }}"></span>{{ b.etiqueta }}</span>
+    <div class="barra-fondo" role="img" aria-label="{{ b.etiqueta }}: {{ b.n }}"><div class="barra-relleno estado-{{ b.clave }}" style="width: {{ b.pct }}%"></div></div>
+    <span class="n">{{ b.n }}</span></div>
+  {% endfor %}
+</div>
+<div class="tarjeta">
+  <h2>Mapa de riesgo</h2>
+  {% if mapa %}
+  <p class="mut">Cada casilla es un contrato que requiere atención, ordenados por cercanía. El color y la etiqueta indican el estado.</p>
+  <div class="mapa">
+    {% for m in mapa %}<a class="casilla estado-{{ m.contrato.estado.value }}" href="{% url 'web:contrato_ficha' m.contrato.id %}" title="{{ m.contrato.objeto }}">
+      <strong>{{ m.contrato.numero }}</strong><small>{{ m.contrato.estado.etiqueta }}</small><small>{{ m.dias|dias_texto }}</small></a>{% endfor %}
+  </div>
+  {% else %}<p>Ningún contrato requiere atención por ahora.</p>{% endif %}
+</div>
+{% if urgentes %}
+<div class="tarjeta"><h2>Atención inmediata</h2>
+<div class="tabla-ancha"><table><thead><tr><th>Contrato</th><th>Objeto</th><th>Responsable</th><th>Estado</th></tr></thead><tbody>
+{% for m in urgentes %}<tr><td><a href="{% url 'web:contrato_ficha' m.contrato.id %}">{{ m.contrato.numero }}</a></td><td>{{ m.contrato.objeto|truncatechars:70 }}</td><td>{{ m.contrato.responsable_nombre }}</td>
+<td>{% include "web/_estado.html" with e=m.contrato.estado %} {{ m.dias|dias_texto }}</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endif %}
+{% endblock %}
